@@ -1,4 +1,4 @@
-return {
+ return {
     "neovim/nvim-lspconfig",
     dependencies = {
         "williamboman/mason.nvim",
@@ -46,9 +46,29 @@ return {
                                 runtime = { version = "Lua 5.1" },
                                 diagnostics = {
                                     globals = { "vim", "it", "describe", "before_each", "after_each" },
-                                }
-                            }
-                        }
+                                },
+                                workspace = {
+                                    -- Make the server aware of Neovim runtime files
+                                    library = vim.api.nvim_get_runtime_file("", true),
+                                    checkThirdParty = false,
+                                    -- Limit the workspace scan to specific project directories
+                                    -- instead of scanning the entire home directory
+                                    maxPreload = 2000,
+                                    preloadFileSize = 1000,
+                                },
+                                telemetry = {
+                                    enable = false,
+                                },
+                            },
+                        },
+                        -- Only load real projects, not the home directory
+                        root_dir = function(fname)
+                            -- Use common project markers to determine project root
+                            local util = require('lspconfig.util')
+                            return util.find_git_ancestor(fname) or
+                                util.root_pattern(".luarc.json", ".luacheckrc", "stylua.toml", "selene.toml")(fname) or
+                                util.root_pattern("init.lua")(fname)
+                        end,
                     }
                 end,
             }
@@ -101,5 +121,4 @@ return {
         vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
         vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
     end
-}
-
+}  
