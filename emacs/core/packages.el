@@ -16,6 +16,7 @@
 (require 'use-package)
 (setq use-package-always-ensure t) ;; Always ensure packages are installed
 
+
 ;; Core packages
 (use-package exec-path-from-shell
   :config
@@ -25,6 +26,10 @@
 
 (use-package general)   ;; Keybinding framework
 (use-package which-key) ;; Key binding hints
+(use-package gcmh)      ;; Garbage Collection Magic Hack
+(use-package centaur-tabs) ;; Better tab system
+(use-package all-the-icons) ;; Icons for UI elements
+(use-package treemacs-all-the-icons) ;; Icons for treemacs
 
 ;; Visual packages
 (use-package all-the-icons
@@ -33,8 +38,9 @@
 ;; Enable diminish to hide minor modes in modeline
 (use-package diminish)
 
-;;vterm
+;; vTerm
 (use-package vterm)
+
 
 (provide 'packages)
 ;;; packages.el ends here

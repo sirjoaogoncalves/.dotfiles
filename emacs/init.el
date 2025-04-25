@@ -7,8 +7,8 @@
 ;;; Code:
 
 ;; Increase garbage collection threshold for faster startup
-(setq gc-cons-threshold 50000000)
-(setq large-file-warning-threshold 100000000)
+(setq gc-cons-threshold (* 128 1024 1024))  ;; 128MB during init
+(setq large-file-warning-threshold (* 100 1024 1024))
 
 ;; Add core and modules directories to load path
 (add-to-list 'load-path (expand-file-name "core" user-emacs-directory))
@@ -28,6 +28,12 @@
 (require 'git)             ;; Git integration
 (require 'ai)              ;; AI tools including Minuet
 (require 'terminal)        ;; Terminal integration
+(require 'org-config)      ;; Org Mode configuration
+(require 'dired-config)    ;; Enhanced dired functionality 
+(require 'window-config)   ;; Window Managment
+(require 'performance)     ;; Performance
+(require 'tramp-config)    ;; TRAMP
+;;(require 'ide-config)      ;; Layout Configurations
 
 ;; Load custom file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))

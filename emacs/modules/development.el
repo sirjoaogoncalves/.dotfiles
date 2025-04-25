@@ -10,16 +10,7 @@
   :bind-keymap
   ("C-c p" . projectile-command-map))
 
-;; Treemacs file explorer
-(use-package treemacs
-  :defer t
-  :config
-  (treemacs-follow-mode t)
-  (treemacs-filewatch-mode t))
-
-;; Integrate treemacs with projectile
-(use-package treemacs-projectile
-  :after (treemacs projectile))
+;; Treemacs configuration moved to ide-config.el
 
 ;; Flycheck for syntax checking
 (use-package flycheck
@@ -96,7 +87,6 @@
     "pk" '(projectile-kill-buffers :which-key "kill project buffers")
     "pc" '(projectile-compile-project :which-key "compile project")
     "pa" '(projectile-add-known-project :which-key "add project") 
-    "pt" '(treemacs :which-key "toggle treemacs")
     
     "l" '(:ignore t :which-key "lsp")
     "la" '(lsp-execute-code-action :which-key "code action")

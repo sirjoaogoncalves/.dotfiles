@@ -76,5 +76,18 @@
 ;; Better performance
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
+;; Don't show special buffers in Tab Bar
+(setq tab-bar-exclude-mode-regexps 
+      '("^\\*\\(scratch\\|Messages\\|Warnings\\|dashboard\\|Completions\\)\\*$"))
+
+;; Don't show scratch buffer at startup
+(setq initial-scratch-message nil)
+
+;; Control which buffers show up in the buffer list
+(setq display-buffer-alist
+      '(("\\*scratch\\|\\*Messages\\|\\*Warnings\\*"
+         (display-buffer-no-window)
+         (allow-no-window . t))))
+
 (provide 'defaults)
 ;;; defaults.el ends here

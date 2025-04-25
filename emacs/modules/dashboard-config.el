@@ -1,83 +1,68 @@
-;;; dashboard-config.el --- Elegant dashboard configuration -*- lexical-binding: t; -*-
+;;; dashboard-config.el --- Ghost Emacs Dashboard -*- lexical-binding: t; -*-
+
+;; Create a custom Ghost Emacs banner image
+(defun dashboard-ghost-emacs-banner ()
+  "Return the Ghost Emacs ASCII art banner."
+  (let ((ghost-art "
+⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣦⠀
+⠀⠀⠀⠀⣰⣿⡟⢻⣿⡟⢻⣧
+⠀⠀⠀⣰⣿⣿⣇⣸⣿⣇⣸⣿
+⠀⠀⣴⣿⣿⣿⣿⠟⢻⣿⣿⣿
+⣠⣾⣿⣿⣿⣿⣿⣤⣼⣿⣿⠇
+⢿⡿⢿⣿⣿⣿⣿⣿⣿⣿⡿⠀
+⠀⠀⠈⠿⠿⠋⠙⢿⣿⡿⠁⠀
+"))
+    (propertize ghost-art 'face '(:foreground "#bd93f9" :height 0.9))))
+
+;; Create a temporary file for the banner
+(defun dashboard-create-ghost-banner ()
+  "Create a temporary file with Ghost Emacs banner."
+  (let* ((temporary-file-directory
+          (expand-file-name "dashboard-banners/" user-emacs-directory))
+         (banner-file (expand-file-name "ghost-emacs-banner.txt" temporary-file-directory)))
+    ;; Ensure directory exists
+    (unless (file-exists-p temporary-file-directory)
+      (make-directory temporary-file-directory t))
+    
+    ;; Write banner to file
+    (with-temp-file banner-file
+      (insert (dashboard-ghost-emacs-banner)))
+    
+    ;; Return the file path
+    banner-file))
 
 ;; Setup Dashboard
 (use-package dashboard
   :config
   (dashboard-setup-startup-hook)
   
-  ;; Dashboard content
-  (setq dashboard-items '((recents  . 8)
-                          (bookmarks . 5)
-                          (projects . 5)))
+  ;; Dashboard configuration
+  (setq dashboard-banner-logo-title "Ghost Emacs"
+        dashboard-startup-banner (dashboard-create-ghost-banner)
+        dashboard-image-banner-max-height 250
+        dashboard-image-banner-max-width 250
+        dashboard-center-content t
+        dashboard-set-heading-icons nil
+        dashboard-set-file-icons nil
+        dashboard-set-navigator nil
+        dashboard-set-init-info nil
+        dashboard-set-footer t)
+
+  ;; Clear dashboard items
+  (setq dashboard-items '())
+
+  ;; Custom footer with system information
+  (setq dashboard-footer-messages 
+        (list (format "Emacs v%s • %d packages • %.2fs startup" 
+                      emacs-version 
+                      (length package-activated-list)
+                      (float-time (time-subtract after-init-time before-init-time)))))
   
-  ;; Disable logo
-  (setq dashboard-startup-banner nil)
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
-  
-  ;; Center content
-  (setq dashboard-center-content t)
-  
-  ;; Remove welcome title
-  (setq dashboard-banner-logo-title "")
-  (setq dashboard-init-info "")
-  
-  ;; Custom header with date on the right
-  (defun dashboard-insert-custom-header ()
-    "Insert custom header with date on the right."
-    (let* ((date-string (format-time-string "%A, %B %d, %Y"))
-           (date-width (length date-string))
-           (window-width (window-width))
-           (padding (- window-width date-width 2)))
-      (insert (make-string 2 ?\n))
-      (insert (make-string padding ?\s))
-      (insert (propertize date-string 'face '(:inherit dashboard-banner-logo-title :height 1.1)))
-      (insert (make-string 3 ?\n))))
-  
-  (advice-add #'dashboard-insert-banner :override #'dashboard-insert-custom-header)
-  
-  ;; Custom footer with centered system info
-  (defun dashboard-insert-custom-footer ()
-    "Insert custom footer with centered system information."
-    (let* ((footer-text (concat 
-                         (propertize (format "Emacs v%s" emacs-version) 'face 'font-lock-comment-face)
-                         " • "
-                         (propertize (format "%d packages loaded" (length package-activated-list)) 'face 'font-lock-comment-face)
-                         " • "
-                         (propertize (format "%.2fs startup time" (float-time (time-subtract after-init-time before-init-time))) 'face 'font-lock-comment-face)))
-           (footer-width (length (substring-no-properties footer-text)))
-           (window-width (window-width))
-           (padding (max 0 (/ (- window-width footer-width) 2))))
-      
-      ;; Add space before footer
-      (insert (make-string 3 ?\n))
-      
-      ;; Center the footer
-      (insert (make-string padding ?\s))
-      (insert footer-text)))
-  
-  (setq dashboard-footer-messages nil)
-  (setq dashboard-footer-icon "")
-  (advice-add #'dashboard-insert-footer :override #'dashboard-insert-custom-footer)
-  
-  ;; Make sure Projects and Bookmarks sections display properly
-  (setq dashboard-set-navigator nil)
-  (setq dashboard-set-init-info nil)
-  (setq dashboard-projects-backend 'projectile)
-  (setq dashboard-path-style 'truncate-beginning)
-  (setq dashboard-path-max-length 60)
-  (setq dashboard-show-shortcuts nil)
-  
-  ;; Make sure bookmarks are loaded
-  (require 'bookmark)
-  
-  ;; Ensure recent files are loaded
-  (recentf-mode 1)
-  
-  ;; Ensure projectile is initialized
-  (with-eval-after-load 'projectile
-    (setq projectile-known-projects-file 
-          (expand-file-name "projectile-bookmarks.eld" user-emacs-directory))))
+  ;; Customize footer appearance
+  (setq dashboard-footer-icon ""))
+
+;; Hook dashboard refresh into startup
+(add-hook 'after-init-hook 'dashboard-refresh-buffer)
 
 ;; Define keybinding with my-leader-keys
 (with-eval-after-load 'general
